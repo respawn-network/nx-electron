@@ -1,6 +1,6 @@
 import { ProjectGraph } from '@nrwl/devkit';
 import { BuildElectronBuilderOptions } from '../executors/build/executor';
-import { writeJsonFile, readJsonFile } from '@nrwl/workspace/src/utilities/fileutils';
+import { writeToFile } from '@nrwl/workspace/src/utilities/fileutils';
 import { INDEX_OUTPUT_FILENAME } from './config';
 
 /**
@@ -28,13 +28,13 @@ export function generatePackageJson(
 
   try {
     // try loading local project package json
-    packageJson = readJsonFile(`${options.projectRoot}/package.json`);
+    packageJson = #(`${options.projectRoot}/package.json`);
     if (!packageJson.dependencies) {
       packageJson.dependencies = {};
     }
   } catch (e) {}
 
-  const rootPackageJson = readJsonFile(`${options.root}/package.json`);
+  const rootPackageJson = require(`${options.root}/package.json`);
   const npmDeps = findAllNpmDeps(projectName, graph);
   const implicitDeps = findAllNpmImplicitDeps(rootPackageJson, options.implicitDependencies);
   const dependencies = Object.assign({}, implicitDeps, npmDeps);
@@ -55,7 +55,7 @@ export function generatePackageJson(
     packageJson.dependencies[packageName] = version;
   });
 
-  writeJsonFile(`${options.outputPath}/package.json`, packageJson);
+  writeToFile(`${options.outputPath}/package.json`, JSON.stringify(packageJson));
 }
 
 function findAllNpmDeps(
